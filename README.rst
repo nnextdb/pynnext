@@ -57,7 +57,7 @@ n_queries = 10
 vectors = np.random.rand(n_vecs, n_dim)
 
 # Insert vectors into the index.
-nnindex.insert(vectors)
+nnindex.add(vectors)
 
 # Create a query vector set.
 q_vectors = np.random.rand(n_queries, n_dim)
@@ -70,6 +70,8 @@ _idx, _res = nnindex.search(q_vectors, k)  # search
 ```
 
 ### 2. Compound indices
+🚧 WIP 🚧. Not implemented.
+
 NNext is capable of storing additional metadata related to your vectors in a rich format. In this example we will use the
 [movie plots dataset from Kaggle](https://www.kaggle.com/datasets/jrobischon/wikipedia-movie-plots).
 ```python

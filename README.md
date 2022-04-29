@@ -93,38 +93,99 @@ Install the Python client for NNext:
 pip install nnext
 ```
 
-We can now initialize the client and create a `movies` index:
+We can now initialize the client and create a index:
 
 ```python
-import nnext
 import numpy as np
+import nnext
 from nnext import _and, _eq, _gte, _in
 
-nnclient = nnext.Client({
-  'nodes': [{
-    'host': 'localhost',
-    'port': '6040'
-  }]
-})
+# Create and initialize the vector client
+nnclient = nnext.Client(
+    nodes=[
+    {'host': 'localhost', 'port': '6040'}
+  ])
 ```
-Create an index
+
+
+Broadly speaking, you can create two types of indices
+### 1. Simple indices
 ```python
-dims = 768
+n_dim = 768
+
+# Create an vector index.
+nnindex = nnclient.index.create(
+    d=n_dim,
+    name='test_ANN')
+
+n_vecs = 1000
+k = 5
+n_queries = 10
+vectors = np.random.rand(n_vecs, n_dim)
+
+# Insert vectors into the index.
+nnindex.add(vectors)
+
+# Create a query vector set.
+q_vectors = np.random.rand(n_queries, n_dim)
+
+# Now search the vectors.
+_idx, _res = nnindex.search(q_vectors, k)  # search
+
+# The search operation returns a tuple of vectors and optionally the data
+# associated with the vectors.
+```
+
+### 2. Compound indices
+🚧 WIP 🚧.
+
+Not implemented.
+
+NNext is capable of storing additional metadata related to your vectors in a rich format. In this example we will use the
+[movie plots dataset from Kaggle](https://www.kaggle.com/datasets/jrobischon/wikipedia-movie-plots).
+```python
 nnindex = client.index.create({
-  "name": "movies_simple",
-  "dims": dims
+  "name": "movies",
+  "schema": {
+      "id" : "string", #⬅ inferred primary key
+      "title" : "string",
+      "released_year" : "int32",
+      "genre" :  "float",
+      "wikipage" : "string",
+      "plot" : "string",
+      "rating" :  "float"
+  },
+  "index_type": "approximated", #⬅ indexes assumed to be approximated by default.
+  "dims": n_dim
 })
 ```
 
-Add vectors to the index.
+
+Now, let's add a vector to the collection we just created:
+
 ```python
-data = np.random.rand(100, dims)
-add_res = nnindex.add(query)
+vector = {
+ "id": "124",
+ "company_name": "Stark Industries",
+ "num_employees": 5215,
+ "country": "USA",
+}
+
+nnindex.documents.create(document)
 ```
-Search the vectors. Get the nearest 7 vectors for each query vector.
+
+Finally, let's search for the document we just indexed:
+
 ```python
-query = np.random.rand(5,dims)
-sch_res = idx.search(query, k=7)
+q_filter = {
+    _and: [
+        { "Release Year": { _gte: 2015 } },
+        { "Genre": { _eq: "comedy" } },
+        { "actors": { _in: ["Russell Crowe"] } }
+    ]
+}
+
+client.collections['companies'].documents.search(search_parameters)
 ```
 
 ## Documentation
