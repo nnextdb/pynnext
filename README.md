@@ -67,7 +67,7 @@ Here's a quick example showcasing how you can create an index, insert vectors/do
 Let's begin by installing the NNext server.
 
 ```shell
-NNEXT_PKG=nnext-0.0.1-amd64.deb
+NNEXT_PKG=nnext-0.0.12-amd64.deb
 NNEXT_URL=https://trove.nnext.io/downloads
 wget $NNEXT_URL/$NNEXT_PKG
 wget $NNEXT_URL/$NNEXT_PKG.sha512
