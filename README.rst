@@ -11,10 +11,27 @@ NNext is a
 
 Here's a quick example showcasing how you can create an index, insert vectors/documents and search it on NNext.
 
-Let's begin by starting the NNext server via Docker:
+Let's begin by installing the NNext server.
 
+```shell
+NNEXT_PKG=nnext-0.0.12-amd64.deb
+NNEXT_URL=https://trove.nnext.io/downloads
+wget $NNEXT_URL/$NNEXT_PKG
+wget $NNEXT_URL/$NNEXT_PKG.sha512
+shasum -a 512 -c $NNEXT_PKG.sha512
+sudo dpkg -i $NNEXT_PKG
 ```
-docker run -p 6040:6040 -v/tmp/data:/data nnext/nnext:latest --data-dir /data --api-key=Hu52dwsas2AdxdE
+
+Run nnext
+```shell
+sudo nnext
+```
+
+You should see output like this
+```shell
+...
+...
+[2022-04-27 13:02:10.029] [info] 🏁 Started NNext at ▸ 127.0.0.1:6040
 ```
 
 We have a [API Client](#api-clients) in python only, but let's use it for this example.
