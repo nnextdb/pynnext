@@ -2,10 +2,10 @@
 
 if [ -d "./dist" ]
 then
-    echo "Directory /path/to/dir exists."
+    echo "Removing existing ./dist."
     rm -rf dist/*
 else
-    echo "Error: Directory /path/to/dir does not exists."
+    echo "Error: ./dist."
 fi
 
 python3 setup.py bdist_wheel --universal

@@ -1,10 +1,11 @@
 LICENSE
-README.md
+README.rst
 pyproject.toml
 setup.py
 nnext/__init__.py
 nnext/client.py
 nnext/config.py
+nnext/index.py
 nnext/main_pb2.py
 nnext/main_pb2_grpc.py
 nnext/ops.py
