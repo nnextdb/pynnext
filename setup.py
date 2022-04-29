@@ -13,7 +13,7 @@ setup(
     name="nnext",
     description="Python client library for the NNext. A ⚡ blazingly fast, 🔍 nearest-neighbors vector search engine for building delightful ML apps",
     long_description=long_description,
-    version="0.0.35",
+    version="0.0.36",
     install_requires=[
         'grpcio >= 1.44.0; python_version >= "3.6"',
         'protobuf >= 3.20.0; python_version >= "3.6"'
