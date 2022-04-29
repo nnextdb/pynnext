@@ -34,12 +34,10 @@ import nnext
 from nnext import _and, _eq, _gte, _in
 
 # Create and initialize the vector client
-nnclient = nnext.Client({
-  'api_key': 'DrlSpu6upU6us9EvoWR',
-  'nodes': [
-      {'host': 'localhost', 'port': '6040'}
-  ]
-})
+nnclient = nnext.Client(
+    nodes=[
+    {'host': 'localhost', 'port': '6040'}
+  ])
 ```
 
 
@@ -49,11 +47,9 @@ Broadly speaking, you can create two types of indices
 n_dim = 768
 
 # Create an vector index.
-nnindex = client.index.create({
-  "name": "test_ANN",
-  "index_type": "approximated",
-  "dims": n_dim
-})
+nnindex = nnclient.index.create(
+    d=n_dim,
+    name='test_ANN')
 
 n_vecs = 1000
 k = 5

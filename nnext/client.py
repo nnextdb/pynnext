@@ -15,7 +15,7 @@ from nnext.main_pb2_grpc import NNextStub
 
 class Client(object):
 
-    def __init__(self, nodes):
+    def __init__(self, nodes=[]):
         chan_opts = [
             ('grpc.lb_policy_name', 'pick_first'),
             ('grpc.enable_retries', 0),
