@@ -16,32 +16,45 @@ class Index(object):
         self.d = d
 
     def search(self, query, k=5, return_metadata=True, return_vector=True, filters=None):
-        print(query, query.shape)
+        """Returns k nearest neighbors of each query vector, using the metric type associated with the index.
+        """
 
         n, d = query.shape
 
-        query_vector = []
+        query_vectors = []
         for datum in query:
             vector = Vector(rptd__element=datum)
-            query_vector.append(vector)
+            query_vectors.append(vector)
 
         vsreq = VectorSearchRequest(
             index_name=self.name,
             k=k,
-            rptd_query_vector=query_vector,
+            rptd_query_vector=query_vectors,
             omit_metadata=not return_metadata,
             omit_vector=not return_vector)
 
         vsres = self.grpc_stub.VectorSearch(vsreq)
 
-        search_res = []
+        # Get vectors
+
+        search_res_idx = []
+        search_res_data = []
         for i in range(n):
             nnbors = []
+            nnbor_indices = []
             for j in range(k):
-                nnbors.append(vsres.rptd__datum[i*k + j].id)
-            search_res.append(nnbors)
+                datum = vsres.rptd__datum[i*k + j]
+                if return_vector:
+                    nnbors.append(datum.rptd__vector)
+                nnbor_indices.append(datum.id)
+            search_res_idx.append(nnbor_indices)
+            if return_vector:
+                search_res_data.append(nnbors)
 
-        return search_res
+        if return_vector:
+            return search_res_idx, search_res_data
+        else:
+            return search_res_idx
 
     def get(self):
         return None
@@ -55,8 +68,6 @@ class Index(object):
         vec_add_req = VectorAddRequest(index_name=self.name)
 
         max_GRPC_MSG_SIZE = 4194304
-
-        print(data.shape[0])
 
         i = 0
         j = 0
