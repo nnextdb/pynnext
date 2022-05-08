@@ -3,6 +3,8 @@
 
 ## About
 
+This repository houses the source code for pynnext, the python client associated with NNext server.
+
 NNext is a
 * ⚡ blazingly fast
 * 📖 source-available [[Elastic License 2.0]](https://www.elastic.co/licensing/elastic-license)
@@ -11,58 +13,32 @@ NNext is a
 <a href="https://tiny.one/nnext-slk-comm-gh"><img src="https://img.shields.io/badge/chat-slack-orange.svg?logo=slack&style=flat"></a>
 <a href="https://twitter.com/intent/follow?screen_name=nnextai"><img src="https://img.shields.io/badge/Follow-nnextai-blue.svg?style=flat&logo=twitter"></a>
 
-[Installation](#installation) | [Contributing](#contributing) |  [Getting Started](#getting-started) | [Connecting 
-To NNext](#connecting-to-redis)
+[Installation](#installation) |  [Quick Start](#quick-start) | [Documentation](#documentation) | [Contributing](#contributing)
 
 ## Installation
-For detailed installation instructions, please see the [Installation](INSTALL.md) guide.
-#### Nnext is supported on
-<table>
-  <tr>
-    <td><img src="https://s3.us-east-2.amazonaws.com/assets.nnext.io/img/build.png" width="50" /></td>
-    <td>Build from Source</td>
-    <td>Build and install nnext from source using cmake & gcc/g++. Please follow the <a href="/COMPILATION.md">Compilation guide</a>.</td>
-  </tr>
-  <tr>
-    <td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Logo-ubuntu_cof-orange-hex.svg/570px-Logo-ubuntu_cof-orange-hex.svg.png?20130511162351" width="50" /></td>
-    <td>Debian <br> Ubuntu</td>
-    <td>Install NNext on Ubuntu using <span style="color: yellowgreen">debian</span> package manager.
-  </tr>
-  <tr>
-    <td><img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Apple-logo.png" width="50" /></td>
-    <td>MacOS</td>
-    <td>🚧 WIP 🚧<br>Install via <span style="color: yellowgreen">homebrew</span></td>
-  </tr>
-  <tr>
-    <td><img src="https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png" width="50" /></td>
-    <td>Docker</td>
-    <td>🚧 WIP 🚧<br>Get the image <span style="color: yellowgreen">nnext:latest</span> image from docker hub</td>
-  </tr>
-  <tr>
-    <td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Kubernetes_logo_without_workmark.svg/1234px-Kubernetes_logo_without_workmark.svg.png" width="50" /></td>
-    <td>Kubernetes</td>
-    <td>🚧 WIP 🚧<br>Create a NNext service on a kubernetes cluster</td>
-  </tr>
-  <tr>
-    <td><img src="https://www.datocms-assets.com/2885/1620155116-brandhcterraformverticalcolor.svg" width="50" /></td>
-    <td>Terraform + Kubernetes</td>
-    <td>🚧 WIP 🚧<br>Create a NNext service via Terraform on a kubernetes cluster</td>
-  </tr>
-  <tr>
-    <td><img src="https://www.datocms-assets.com/2885/1620155116-brandhcterraformverticalcolor.svg" width="50" /></td>
-    <td>Terraform + NNext Cloud</td>
-    <td>🚧 WIP 🚧<br>Provision a Cluster on NNext's cloud via terraform</td>
-  </tr>
-  <tr>
-    <td><img src="https://www.pngall.com/wp-content/uploads/2/Windows-Logo-PNG-File-Download-Free.png" width="50" /></td>
-    <td>Windows</td>
-    <td>🚧 WIP 🚧<br>Not really supported, for purposes development only</td>
-  </tr>
- </table>
+You will need to setup and run an NNext server to utilize this client, or [outsource server management to someone else](https://nnext.ai).
+For detailed server installation instructions, please see the [nnext repo](https://github.com/nnext-ai/nnext).
+
+To install the pynnext client, activate a virtual environment, and install via pip:
+
+1. In editable mode from source:
+```zsh
+git clone https://github.com/nnext-ai/pynnext
+cd pynnext
+pip install -e .
+```
+
+or 
+
+2. From PyPI:
+
+```zsh
+pip install nnext
+```
 
 ## Quick Start
 
-Here's a quick example showcasing how you can create an index, insert vectors/documents and search it on NNext.
+Here's a quick example showcasing how you can create an index, insert vectors/documents and search among them via NNext.
 
 Let's begin by installing the NNext server.
 
@@ -80,7 +56,7 @@ Run nnext
 sudo nnext
 ```
 
-You should see output like this
+You should see something like this:
 ```shell
 ...
 ...
@@ -89,8 +65,24 @@ You should see output like this
 
 Install the Python client for NNext:
 
-```
+```shell
 pip install nnext
+```
+
+Finally, to follow the examples below, install numpy:
+
+1.  From the souce here
+
+```shell
+pip install -r requirements.txt
+```
+
+or
+
+2. Via PyPi
+
+```shell
+pip install numpy==1.22.3
 ```
 
 We can now initialize the client and create a index:
@@ -100,7 +92,7 @@ import numpy as np
 import nnext
 from nnext import _and, _eq, _gte, _in
 
-# Create and initialize the vector client
+# Create and initialize the vector client.
 nnclient = nnext.Client(
     nodes=[
     {'host': 'localhost', 'port': '6040'}
@@ -116,24 +108,31 @@ n_dim = 768
 # Create an vector index.
 nnindex = nnclient.index.create(
     d=n_dim,
-    name='test_ANN')
-
-n_vecs = 1000
-k = 5
-n_queries = 10
-vectors = np.random.rand(n_vecs, n_dim)
+    name='test_index')
 
 # Insert vectors into the index.
+n_vecs = 1000
+vectors = np.random.rand(n_vecs, n_dim)
 nnindex.add(vectors)
 
 # Create a query vector set.
+n_queries = 10
 q_vectors = np.random.rand(n_queries, n_dim)
 
-# Now search the vectors.
-_idx, _res = nnindex.search(q_vectors, k)  # search
+# Search for the nearest neighbors of the
+# query set among the indexed vectors.
+k = 5
+_idx, _res = nnindex.search(q_vectors, k, return_vector=True)
 
-# The search operation returns a tuple of vectors and optionally the data
-# associated with the vectors.
+# The search operation returns a 2d list of the indices of the nearest neighbors
+# for each vector in the query set (i.e. a nested list with shape (n_queries, k)),
+# and optionally the data associated with the neighbor vectors themselves 
+# (i.e. a nested list of shape (n_queries, k, n_dim))
+assert len(_idx) == n_queries
+assert len(_idx[0]) == k
+assert len(_res) == n_queries
+assert len(_res[0]) == k
+assert len(_res[0][0]) == n_dim
 ```
 
 ### 2. Compound indices
@@ -190,7 +189,7 @@ client.collections['companies'].documents.search(search_parameters)
 
 ## Documentation
 
-All NNext Server and Client documentation, including pynext integration articles and helpful recipes, can be found at:
+All NNext Server and Client documentation, including pynnext integration articles and helpful recipes, can be found at:
 <br/>
 
 🚧 WIP 🚧<br>
@@ -200,18 +199,18 @@ All NNext Server and Client documentation, including pynext integration articles
 
 <details><summary>How does this differ from Faiss, ScaNN and Annoy?</summary>
 <p>
-First of all, NNext uses Faiss under the hood. The main thing to note about these software come as python
-packages installable via PIP or Conda. These libraries are very easy to use, from install to the API. However, while
-allowing you to quickly get started, they don't allow for persistence, index growth or high availability. If your
+First of all, NNext uses Faiss under the hood. All of these libraries have python
+packages installable via PIP or Conda, and those are very easy to use, from install to the API. However, while
+they allow you to quickly get started, they don't allow for persistence, index growth or high availability. If your
 application goes down for whatever reason, so do your search indices and data.
 </p>
 </details>
 
 <details><summary>How does this differ from Milvus?</summary>
 <p>
-Milvus is a large piece of software, that takes non-trivial amount of effort to setup, administer, scale and fine-tune.
-It offers you a few thousand configuration parameters to get to your ideal configuration. So it's better suited for large teams
-who have the bandwidth to get it production-ready, regularly monitor it and scale it, especially when they have a need to store
+Milvus is a large piece of software, that takes a non-trivial amount of effort to setup, administer, scale and fine-tune.
+It offers you a few thousand configuration parameters that may need to be tuned to get to your ideal configuration. As a result, it's better suited for large teams
+who have the bandwidth to get it production-ready, and regularly monitor it and scale it, especially when they have a need to store
 billions of documents and petabytes of data (eg: logs).
 
 NNext is built specifically for decreasing the "time to market" for a delightful nearest-neighbor search experience. It 
@@ -222,7 +221,7 @@ See a side-by-side feature comparison [here](https://typesense.org/typesense-vs-
 </p>
 </details>
 
-<details><summary>How does this differ other fully managed solutions like Pinecone?</summary>
+<details><summary>How does this differ from other fully managed solutions like Pinecone?</summary>
 <p>
 In brief - **no vendor lock-in**. Tired of using NNext cloud? Pack up your vectors and go. Obviously we don't want you 
 to go, but if you have to, NNext Cloud allows you to download a compressed zip file containing the latest backup of 
@@ -287,5 +286,5 @@ less work for you
 * bug triaging
 * writing tutorials
 
-Checkout [guide to contributing](https://github.com/redis/redis-py/blob/master/CONTRIBUTING.md) to learn more.
+Checkout the [guide to contributing](#) to learn more.
 
