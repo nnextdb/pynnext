@@ -24,7 +24,7 @@ class Client(object):
 
         node = nodes[0]
         target = f"{node['host']}:{node['port']}"
-        print(target)
+        logging.info(f"Connected to Nnext node nnext@{node['host']}:{node['port']}")
         self.channel = grpc.insecure_channel(
             target=target, options=chan_opts)
         stub = NNextStub(self.channel)

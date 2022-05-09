@@ -3,16 +3,17 @@
 __authors__ = ["Peter W. Njenga"]
 __copyright__ = "Copyright 2022, NNext, Co."
 
-import os
-from m2r import parse_from_file
+# TODO: Add m2r to requirements file, or generate long description by other means.
+# from m2r import parse_from_file
 from setuptools import find_packages, setup
 
-long_description = parse_from_file('README.rst')
+# long_description = parse_from_file('README.rst')
 
 setup(
     name="nnext",
     description="Python client library for the NNext. A ⚡ blazingly fast, 🔍 nearest-neighbors vector search engine for building delightful ML apps",
-    long_description=long_description,
+    long_description=open("README.md").read().strip(),
+    long_description_content_type="text/markdown",
     version="0.0.36",
     install_requires=[
         'grpcio >= 1.44.0; python_version >= "3.6"',
